@@ -1,4 +1,11 @@
 {
   "name": "Nup",
-  "displayName": "Nup"
+  "displayName": "Nup",
+  "extra": {
+    "eas": {
+      "projectId": "221c5fe3-ca07-4bb9-bac1-67cc4f293732"
+    }
+  },
+  "owner": "nupconnect",
+  "slug": "nup-connect"
 }
