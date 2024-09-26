@@ -5,9 +5,10 @@
  * @format
  */
 
-import React from 'react';
+import React, {useEffect} from 'react';
 import type {PropsWithChildren} from 'react';
 import {
+  Button,
   SafeAreaView,
   ScrollView,
   StatusBar,
@@ -24,6 +25,9 @@ import {
   LearnMoreLinks,
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
+import {AUTH0_CLIENT_ID, AUTH0_DOMAIN} from './app/config/config';
+import {useAuthRequest, makeRedirectUri} from 'expo-auth-session';
+import {getToken, saveToken} from './app/config/authUtils';
 
 type SectionProps = PropsWithChildren<{
   title: string;
@@ -62,6 +66,43 @@ function App(): React.JSX.Element {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
 
+  const [, response, promptAsync] = useAuthRequest(
+    {
+      clientId: AUTH0_CLIENT_ID,
+      redirectUri: makeRedirectUri({
+        scheme: 'nupfrontend',
+      }),
+    },
+    {authorizationEndpoint: `https://${AUTH0_DOMAIN}/authorize`},
+  );
+
+  useEffect(() => {
+    if (response?.type === 'success') {
+      const {code} = response.params;
+      saveToken(code); // Save the token securely
+    }
+  }, [response]);
+
+  useEffect(() => {
+    const checkToken = async () => {
+      const token = await getToken();
+      if (token) {
+        // Validate token or directly use it to keep the user logged in
+      }
+    };
+    checkToken();
+  }, []);
+
+  return (
+    <View>
+      <Section title="Step One">
+        Please login to use the NUP-CONNECT APP
+      </Section>
+      <Button onPress={() => promptAsync()} title="Login" />
+    </View>
+  );
+
+  // eslint-disable-next-line no-unreachable
   return (
     <SafeAreaView style={backgroundStyle}>
       <StatusBar
@@ -77,8 +118,7 @@ function App(): React.JSX.Element {
             backgroundColor: isDarkMode ? Colors.black : Colors.white,
           }}>
           <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
+            Hello World! We are running the APPPPPPPPPP
           </Section>
           <Section title="See Your Changes">
             <ReloadInstructions />
